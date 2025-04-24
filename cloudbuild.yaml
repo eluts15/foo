@@ -4,8 +4,8 @@ steps:
   - name: 'gcr.io/kaniko-project/executor:latest'
     id: 'docker-build-status'
     args:
-    - --destination=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/foo/${_ENVIRONMENT}:$COMMIT_SHA
-    - --destination=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/foo/${_ENVIRONMENT}:latest
+    - --destination=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPO_ID}/${_CONTAINER_NAME}/${_ENVIRONMENT}:$COMMIT_SHA
+    - --destination=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPO_ID}/${_CONTAINER_NAME}/${_ENVIRONMENT}:latest
     - --cache=true
     - --cache-ttl=24h
     - --build-arg=MY_SECRET
@@ -20,7 +20,7 @@ steps:
     - '-c'
     - |
       if gcloud run deploy foo-${_ENVIRONMENT} \
-        --image=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/foo/${_ENVIRONMENT}:$COMMIT_SHA \
+        --image=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPO_ID}/${_CONTAINER_NAME}/${_ENVIRONMENT}:$COMMIT_SHA \
         --region=${_REGION} \
         --service-account=${_SERVICE_ACCOUNT} \
         --execution-environment=gen2 \
@@ -42,6 +42,8 @@ options:
 
 substitutions:
   _ENVIRONMENT: "dev"
+  _REPO_ID: "foo-images"
+  _CONTAINER_NAME: "foo"
   _PROJECT_NUMBER: "YOUR_PROJECT_NUMBER"
   _PROJECT_ID: "YOUR_PROJECT_ID"
   _SERVICE_ACCOUNT: "cloudrun-svc-acc"
@@ -50,7 +52,7 @@ substitutions:
 availableSecrets:
   secretManager:
     - versionName: >-
-        projects/${_PROJECT_NUMBER}/secrets/my-secret-${_ENVIRONMENT}/versions/latest
+        projects/${_PROJECT_NUMBER}/secrets/dummy-${_ENVIRONMENT}/versions/latest
       env: "MY_SECRET"
 
  
